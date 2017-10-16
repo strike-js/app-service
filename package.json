@@ -1,0 +1,31 @@
+{
+  "name": "strikejs-app-service",
+  "version": "1.0.0",
+  "description": "App service container for web apps written in TypeScript. ",
+  "main": "lib/index.js",
+  "typings":"strikejs-app-service.d.ts", 
+  "types":"strikejs-app-service.d.ts", 
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strike-js/app-service.git"
+  },
+  "keywords": [
+    "Service",
+    "container"
+  ],
+  "author": "Suhail Abood <suhail.abood@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/strike-js/app-service/issues"
+  },
+  "homepage": "https://github.com/strike-js/app-service#readme",
+  "devDependencies": {
+    "typescript": "^2.5.3"
+  }
+}
