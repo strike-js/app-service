@@ -18,5 +18,5 @@ declare module "strikejs-app-service" {
     }
     export function createCache():ICache; 
 
-    export function createAppService(); 
+    export function createAppService():AppService; 
 }
