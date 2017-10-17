@@ -34,7 +34,7 @@ export function createCache():ICache{
         let key = args[0]; 
         let fn = args.length > 1?args[1]:undefined; 
         let transformFn = args.length > 2?args[2]:undefined; 
-        if (!fn){
+        if (!fn || data[key]){
             return new Promise((res,rej)=>{
                 if (data[key]){
                     res(data[key]); 
