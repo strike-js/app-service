@@ -1,6 +1,6 @@
 {
   "name": "strikejs-app-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "App service container for web apps written in TypeScript. ",
   "main": "lib/index.js",
   "typings":"strikejs-app-service.d.ts", 

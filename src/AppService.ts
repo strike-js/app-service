@@ -2,6 +2,7 @@ import { createCache, ICache } from './Cache';
 
 export interface AppService {
     cache:ICache;
+    readonly services:{[idx:string]:any};
     setService<T>(key:string,createFn:(appService:AppService)=>T):AppService;
     setInstance<T>(key:string,val:T):AppService; 
     getService<T>(key:string):T; 
@@ -26,16 +27,25 @@ export function createAppService(){
     }
 
     function setService<T>(key:string,createFn:(appService:AppService)=>T):AppService {
+        if (services[key]){
+            console.warn(`Service with ${key} already registered`);
+        }
         factories[key] = createFn; 
         return o; 
     }
 
     function setInstance<T>(key:string,val:T){
+        if (services[key]){
+            console.warn(`Service with ${key} already registered`);
+        }
         services[key] = val; 
         return o; 
     }
     
     return o = {
+        get services(){
+            return services; 
+        },
         cache, 
         setService,
         getService,

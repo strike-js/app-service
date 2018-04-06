@@ -1,7 +1,16 @@
 export interface CacheGetter {
     <T>(key:string):Promise<T>; 
     <T>(key:string,fn:(cache:ICache)=>Promise<T>):Promise<T>; 
-    <T,V>(key:string,fn:(cache:ICache)=>Promise<T>,transformer:(val:T)=>V):Promise<V>; 
+    <T,V>(key:string,fn:(cache:ICache)=>Promise<T>,transformer:(val:T)=>V):Promise<V>;
+}
+
+export interface CacheValueMerger {
+    <T>(currentVal:T,newVal:T):T; 
+}
+
+export interface CacheStorageStrategy {
+    store(key:string,payload:any):Promise<boolean>; 
+    pull<T>(key:string):Promise<T>
 }
 
 /**
@@ -21,7 +30,7 @@ export interface ICache {
 /**
  * Creates a cache new object 
  */
-export function createCache():ICache{
+export function createAdvancedCache(strategy:CacheStorageStrategy):ICache{
     var data = {};
     var o = null; 
     function get<T>(key:string):Promise<T>; 
@@ -29,12 +38,9 @@ export function createCache():ICache{
     function get<T,V>(key:string,fn:(cache:ICache)=>Promise<T>,transformer:(val:T)=>V):Promise<V>;  
     function get(...args:any[]){
         if (args.length === 0){
-            throw new Error('No key has been provieded, key cannot be undefined.'); 
+            throw new Error('Item not found in cache.'); 
         }
         let key = args[0]; 
-        if ((typeof key === "object" ||typeof key === 'string') && !key){
-            throw new Error('Invalid key has been provided.')
-        }
         let fn = args.length > 1?args[1]:undefined; 
         let transformFn = args.length > 2?args[2]:undefined; 
         if (!fn || data[key]){

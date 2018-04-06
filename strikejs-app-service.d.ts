@@ -1,6 +1,7 @@
 declare module "strikejs-app-service" {
     export interface AppService {
         cache:ICache;
+        readonly services:{[idx:string]:any}; 
         setService<T>(key:string,createFn:(appService:AppService)=>T):AppService;
         setInstance<T>(key:string,val:T):AppService; 
         getService<T>(key:string):T; 
