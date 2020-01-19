@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function serviceKeyToString(key) {
-    if (typeof key === 'string') {
+    if (typeof key === "string") {
         return key;
     }
     return key.toString();
@@ -10,16 +10,22 @@ class AppService {
     constructor() {
         this._factories = new Map();
         this._services = new Map();
+        this._pending = new Map();
     }
     async get(key) {
+        if (this._pending.has(key)) {
+            return this._pending.get(key);
+        }
         if (!this._services.has(key)) {
             if (!this._factories.has(key)) {
                 throw new Error(`No service with key ${key} has been registered.`);
             }
             const svc = this._factories.get(key)(this);
             let result = svc;
-            if (typeof result['then'] === 'function') {
+            if (typeof result["then"] === "function") {
+                this._pending.set(key, svc);
                 result = await svc;
+                this._pending.delete(key);
             }
             this._services.set(key, result);
         }

@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 function serviceKeyToString(key) {
-    if (typeof key === 'string') {
+    if (typeof key === "string") {
         return key;
     }
     return key.toString();
@@ -46,6 +46,7 @@ var AppService = /** @class */ (function () {
     function AppService() {
         this._factories = new Map();
         this._services = new Map();
+        this._pending = new Map();
     }
     AppService.prototype.get = function (key) {
         return __awaiter(this, void 0, void 0, function () {
@@ -53,16 +54,21 @@ var AppService = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (this._pending.has(key)) {
+                            return [2 /*return*/, this._pending.get(key)];
+                        }
                         if (!!this._services.has(key)) return [3 /*break*/, 3];
                         if (!this._factories.has(key)) {
                             throw new Error("No service with key " + key + " has been registered.");
                         }
                         svc = this._factories.get(key)(this);
                         result = svc;
-                        if (!(typeof result['then'] === 'function')) return [3 /*break*/, 2];
+                        if (!(typeof result["then"] === "function")) return [3 /*break*/, 2];
+                        this._pending.set(key, svc);
                         return [4 /*yield*/, svc];
                     case 1:
                         result = _a.sent();
+                        this._pending.delete(key);
                         _a.label = 2;
                     case 2:
                         this._services.set(key, result);

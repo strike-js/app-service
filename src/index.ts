@@ -1,8 +1,8 @@
-export type FactoryFn<T> = (appService:AppService) => T | Promise<T>;
+export type FactoryFn<T> = (appService: AppService) => T | Promise<T>;
 export type ServiceKey = string | Symbol;
 
-function serviceKeyToString(key:ServiceKey) {
-  if (typeof key === 'string') {
+function serviceKeyToString(key: ServiceKey) {
+  if (typeof key === "string") {
     return key;
   }
   return key.toString();
@@ -10,22 +10,29 @@ function serviceKeyToString(key:ServiceKey) {
 
 export class AppService {
   _factories: Map<ServiceKey, FactoryFn<any>>;
+  _pending: Map<ServiceKey, Promise<any>>;
   _services: Map<ServiceKey, any>;
 
   constructor() {
     this._factories = new Map<ServiceKey, FactoryFn<any>>();
     this._services = new Map<ServiceKey, any>();
+    this._pending = new Map<ServiceKey, Promise<any>>();
   }
 
-  async get<T>(key: ServiceKey):Promise<T> {
+  async get<T>(key: ServiceKey): Promise<T> {
+    if (this._pending.has(key)) {
+      return this._pending.get(key);
+    }
     if (!this._services.has(key)) {
       if (!this._factories.has(key)) {
         throw new Error(`No service with key ${key} has been registered.`);
       }
       const svc = this._factories.get(key)(this);
-      let result:any = svc;
-      if (typeof result['then'] === 'function') {
+      let result: any = svc;
+      if (typeof result["then"] === "function") {
+        this._pending.set(key, svc);
         result = await svc;
+        this._pending.delete(key);
       }
       this._services.set(key, result);
     }
@@ -36,9 +43,14 @@ export class AppService {
     if (this._factories.has(key)) {
       if (this._services.has(key)) {
         throw new Error(
-          `Service with key ${serviceKeyToString(key)} has already been instantiated`);
+          `Service with key ${serviceKeyToString(
+            key
+          )} has already been instantiated`
+        );
       }
-      console.warn(`Service with key ${serviceKeyToString(key)} is already registered`);
+      console.warn(
+        `Service with key ${serviceKeyToString(key)} is already registered`
+      );
     }
     this._factories.set(key, createFn);
     return this;
@@ -52,5 +64,4 @@ export class AppService {
   get services() {
     return this._services;
   }
-
 }
